@@ -1,30 +1,47 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div class="bg-black text-white text-center">
+    <p class="p-1 m-0">
+      Sign up & get 20% off to your first order.
+      <a href="signUp" class="text-white text-capitalize fw-bold">sign up now</a>
+    </p>
+  </div>
+  <navbarC />
+  <router-view />
+  <FooterC />
 </template>
 
+<script>
+import { onMounted } from "vue";
+import { useProductStore } from "./store/productStore";
+import { useCartStore } from "./store/cartStore";
+import FooterC from "./components/footerC.vue";
+import navbarC from "./components/navbarC.vue";
+
+export default {
+  components: {
+    navbarC,
+    FooterC,
+  },
+
+  setup() {
+    const storeProduct = useProductStore();
+    const storeCart = useCartStore();
+
+    onMounted(() => {
+      storeProduct.fetch_products_limit();
+      storeCart.loadFromLocalStorage();
+    });
+
+  },
+
+};
+
+
+
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+* {
+  box-sizing: border-box;
 }
 </style>
