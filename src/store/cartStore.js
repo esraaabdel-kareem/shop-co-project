@@ -9,6 +9,19 @@ import { useProductStore } from "./productStore";
 export const useCartStore = defineStore("useCartStore", () => {
   const carts = ref([]);
 
+  const products = ref([]);
+
+  const loadProductsFromJSON = async () => {
+    try {
+      const response = await  fetch("http://localhost:3000/product");
+      if (!response.ok) throw new Error("Failed to fetch products");
+      const data = await response.json();
+      products.value =  data;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } 
+  };
+
   const addCart = (id, price, quantity = 1) => {
     const data = { id, price, quantity };
     const existingItem = carts.value.find((item) => item.id === data.id);
@@ -54,19 +67,21 @@ export const useCartStore = defineStore("useCartStore", () => {
   const cartPreview = computed(() => {
     const productStore = useProductStore();
 
-    return carts.value.map((prd) => {
-      const product = productStore.products.findIndex((e) => e.id === prd.id);
+    return carts.value
+      .map((prd) => {
+        const product = productStore.products.findIndex((e) => e.id === prd.id);
 
-      if (!product ) {
-        console.log(`product ${prd.id} not found`);
-        return null;
-      }
-      return {
-        product,
-        quantity: prd.quantity,
-        totalProduct: product.price * prd.quantity,
-      };
-    }).filter((e) => e !== null);
+        if (!product) {
+          console.log(`product ${prd.id} not found`);
+          return null;
+        }
+        return {
+          product,
+          quantity: prd.quantity,
+          totalProduct: product.price * prd.quantity,
+        };
+      })
+      .filter((e) => e !== null);
   });
 
   const total = computed(() => {
@@ -75,7 +90,7 @@ export const useCartStore = defineStore("useCartStore", () => {
 
   const alertAddCart = () => {
     Swal.fire({
-      position: "top",
+      position: "canter",
       icon: "success",
       title: "Product added to cart",
       showConfirmButton: false,
@@ -85,7 +100,7 @@ export const useCartStore = defineStore("useCartStore", () => {
 
   const alertAddCartFailed = () => {
     Swal.fire({
-      position: "top",
+      position: "canter",
       icon: "error",
       title: "Product already added to cart",
       showConfirmButton: false,
@@ -122,6 +137,7 @@ export const useCartStore = defineStore("useCartStore", () => {
     carts,
     addCart,
     loadFromLocalStorage,
+    loadProductsFromJSON,
     cartPreview,
     incrementQuantity,
     decrementQuantity,
