@@ -13,7 +13,7 @@
         <h1 class="main-title mb-5">Your Cart</h1>
         <div class="row my-5">
             <div class="col-lg-8 col-sm-12 border border-2 border-light-subtle rounded-5 p-3 "
-                v-if="cartStore.carts && cartStore.carts.length > 0">
+                v-if="carts && carts.length > 0">
                 <table class="table table-border  p-3" style="width: 100%">
                     <tbody>
                         <tr v-for="( cart, index ) in cartStore.carts" :key="index" class="py-3 rounded-5 ">
@@ -55,7 +55,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-lg-4 py-sm-2" v-if="cartStore.carts && cartStore.carts.length > 0">
+            <div class="col-lg-4 py-sm-2" v-if="carts && carts.length > 0">
                 <div class="cart-total rounded-4 border border-2 border-light-subtle p-4">
                     <h3 class="fw-bold mb-4">Our Summary</h3>
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -86,9 +86,9 @@
 
                         <div class="d-flex py-3">
                             <div
-                                class=" rounded-5 border-0 bg-light w-100 px-1 d-flex justify-content-center align-items-center">
-                                <i class="fas fa-tag text-secondary"></i>
-                                <input type="text" placeholder="Add Promo Code" class="border-0 bg-light text-muted"
+                                class=" rounded-5 border-0 bg-light w-100 px-auto d-flex justify-content-center align-items-center">
+                                <i class="fas fa-tag text-secondary px-2"></i>
+                                <input type="text" placeholder="Add Promo Code" class=" input border-0 bg-light text-muted"
                                     v-model="promoCode">
                             </div>
                             <button class="btn btn-dark rounded-5 px-3 fw-bold fs-5" @input="applyPromoCode()">
@@ -113,7 +113,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="!cartStore.carts || cartStore.carts.length === 0" class="text-center w-50 ">
+        <div v-if="!carts || carts.length === 0" class="text-center w-50 ">
             <h5 class="alert alert-secondary text-black-50 ">Your cart is empty <i
                     class="fas fa-shopping-cart fs-6"></i></h5>
         </div>
@@ -138,6 +138,7 @@ const applyPromoCode = () => {
     promoCode.value = '';
 };
 
+const carts = cartStore.cartPreview ;
 
 onMounted(async () => {
     try {
@@ -312,5 +313,10 @@ onMounted(async () => {
     width: 100%;
     height: 220px;
     opacity: 1;
+}
+
+.input {
+    border: none;
+    outline: none;
 }
 </style>
