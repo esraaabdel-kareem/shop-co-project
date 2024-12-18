@@ -12,49 +12,50 @@
         </nav>
         <h1 class="main-title mb-5">Your Cart</h1>
         <div class="row my-5">
-            <div class="col-lg-8">
-                <div class="cart-table rounded-4 border border-2 border-light-subtle p-4 ">
-                    <table class="table border-bottom border-1 border-light" v-if="carts.length">
-                        <tbody>
-                            <tr v-for="( cart, index ) in carts" :key="index" class="py-3 rounded-5 ">
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img :src="cart.image" class="rounded-4 "
-                                            style="width: 50px; height: 50px; object-fit: cover" :alt="cart.title" />
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        <p class="fw-bold mb-0">{{ cart.title }}</p>
-                                        <span class="fw-bold d-block text-muted">color: {{ cart.color }}</span>
-                                        <span class="fw-bold d-block text-muted">size: {{ cart.size }}</span>
-                                        <p class="fw-bold mb-0">{{ currencyUSD(cart.totalProducts) }}</p>
-                                    </div>
-                                </td>
-                                <td class="d-flex justify-content-end flex-column align-items-end">
-                                    <button class="button " @click="cartStore.removeFromCart(index)">
-                                        <svg viewBox="0 0 448 512" class="svgIcon">
-                                            <path
-                                                d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z">
-                                            </path>
-                                        </svg>
+            <div class="col-lg-8 col-sm-12 border border-2 border-light-subtle rounded-5 p-3 "
+                v-if="cartStore.carts && cartStore.carts.length > 0">
+                <table class="table table-border  p-3" style="width: 100%">
+                    <tbody>
+                        <tr v-for="( cart, index ) in cartStore.carts" :key="index" class="py-3 rounded-5 ">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img :src="cart.image" class="rounded-4 "
+                                        style="width: 50px; height: 50px; object-fit: cover" :alt="cart.title" />
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <p class="fw-bold mb-0">{{ cart.title }}</p>
+                                    <span class="fw-bold d-block text-muted">color: {{ cart.color }}</span>
+                                    <span class="fw-bold d-block text-muted">size: {{ cart.size }}</span>
+                                    <p class="fw-bold mb-0">{{ currencyUSD(cart.price) }}</p>
+                                </div>
+                            </td>
+                            <td class="d-flex justify-content-end flex-column align-items-end">
+                                <button class="button " @click="cartStore.removeCartItem(index)">
+                                    <svg viewBox="0 0 448 512" class="svgIcon">
+                                        <path
+                                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z">
+                                        </path>
+                                    </svg>
+                                </button>
+                                <div class="btn-group py-3 " role="group" aria-label="Basic example">
+                                    <button class="btn btn-light rounded-start-5 "
+                                        @click="cartStore.decrementQuantity(index)">
+                                        <i class="fas fa-minus"></i>
                                     </button>
-                                    <div class="btn-group py-3 " role="group" aria-label="Basic example">
-                                        <button class="btn btn-light rounded-start-5 " @click="cartStore.decrementQuantity()">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-                                        <button class=" btn bg-light border-0 " value="1">{{ cart.quantity }}</button>
-                                        <button class="btn btn-light rounded-end-5" @click="cartStore.incrementQuantity()">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                    <button class=" btn bg-light border-0 " value="1">{{ cart.quantity }}</button>
+                                    <button class="btn btn-light rounded-end-5"
+                                        @click="cartStore.incrementQuantity(index)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="col-lg-4 py-sm-2">
+            <div class="col-lg-4 py-sm-2" v-if="cartStore.carts && cartStore.carts.length > 0">
                 <div class="cart-total rounded-4 border border-2 border-light-subtle p-4">
                     <h3 class="fw-bold mb-4">Our Summary</h3>
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -62,8 +63,11 @@
                         <p class="fw-bold mb-0">{{ currencyUSD(cartStore.total) }}</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <p class="fw-bold mb-0 text-black-50">Discount (-{{ cartStore.discount }} %)</p>
-                        <p class="fw-bold mb-0 text-danger">-{{ currencyUSD(cartStore.discount) }}</p>
+                        <p class="fw-bold mb-0 text-black-50">Discount (-{{ cartStore.discount || 0 }} %)</p>
+                        <p class="fw-bold mb-0 text-danger">-{{ currencyUSD(cartStore.total && cartStore.discount
+                            ? (cartStore.total * cartStore.discount / 100)
+                            : 0)
+                            }}</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <p class="fw-bold mb-0 text-black-50">Delivery Fee</p>
@@ -73,20 +77,25 @@
                     <div class="d-flex flex-column border-top border-1 border-light pt-3">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <p class="fw-bold mb-0">Total</p>
-                            <p class="fw-bold mb-0">{{ currencyUSD(cartStore.total + 15) }}</p>
+                            <p class="fw-bold mb-0">{{ currencyUSD(
+                                (cartStore.total && cartStore.discount
+                                    ? cartStore.total * (1 - cartStore.discount / 100)
+                                    : cartStore.total) + 15
+                            ) }}</p>
                         </div>
 
                         <div class="d-flex py-3">
                             <div
-                                class=" rounded-5 border-0 bg-light w-100 px-3 d-flex justify-content-center align-items-center">
+                                class=" rounded-5 border-0 bg-light w-100 px-1 d-flex justify-content-center align-items-center">
                                 <i class="fas fa-tag text-secondary"></i>
-                                <input type="text" placeholder="Add Promo Code" class="border-0 bg-light text-muted">
+                                <input type="text" placeholder="Add Promo Code" class="border-0 bg-light text-muted"
+                                    v-model="promoCode">
                             </div>
-                            <button class="btn btn-dark rounded-5 px-3 fw-bold fs-5">
+                            <button class="btn btn-dark rounded-5 px-3 fw-bold fs-5" @input="applyPromoCode()">
                                 Apply
                             </button>
                         </div>
-                        <button class="animated-button">
+                        <button class="animated-button" @click="cartStore.checkout()">
                             <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z">
@@ -100,47 +109,49 @@
                                 </path>
                             </svg>
                         </button>
-
                     </div>
-
                 </div>
             </div>
+        </div>
+        <div v-if="!cartStore.carts || cartStore.carts.length === 0" class="text-center w-50 ">
+            <h5 class="alert alert-secondary text-black-50 ">Your cart is empty <i
+                    class="fas fa-shopping-cart fs-6"></i></h5>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
 import { useCartStore } from '@/store/cartStore';
 import { currencyUSD } from '@/shared/currency';
-import { onMounted } from 'vue';
-import { useProductStore } from '@/store/productStore';
-
-const productStore = useProductStore();
-
-
+import { onMounted, ref } from 'vue';
 
 const cartStore = useCartStore();
 
-const carts = computed(() => cartStore.cartPreview);
+const promoCode = ref('');
+
+const applyPromoCode = () => {
+    if (promoCode.value.trim() === '') {
+        alert('Please enter a valid promo code.');
+        return;
+    }
+    cartStore.applyPromoCode(promoCode.value);
+    promoCode.value = '';
+};
 
 
-
-
-onMounted(() => {
-    productStore.fetch_products();
+onMounted(async () => {
+    try {
+        await cartStore.loadProductsFromJSON();
+    } catch (error) {
+        console.log(error);
+    }
 });
+
 
 </script>
 
 
 <style lang="scss" scoped>
-.container {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-}
-
 .main-title {
     font-size: 6rem;
     font-weight: bold;
@@ -200,7 +211,7 @@ onMounted(() => {
     }
 
     &:hover {
-        width: 140px;
+        width: 110px;
         border-radius: 50px;
         transition-duration: .3s;
         background-color: black;
