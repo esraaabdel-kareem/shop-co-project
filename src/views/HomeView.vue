@@ -90,7 +90,7 @@
                   <span v-else class="fs-5 fw-bold">
                     {{ currency(product.price) }}
                   </span>
-                  <button class="Btn " @click="cartStore.addCart(product.id, product.price, product.quantity)">
+                  <button class="Btn " @click="cartStore.addCart(product.id, product.title, product.image, product.price, product.quantity)">
                     <div class="sign">
                       <i class="fas fa-cart-plus"></i>
                     </div>
@@ -141,7 +141,7 @@
                   <span v-else class="fs-5 fw-bold">
                     {{ currency(product.price) }}
                   </span>
-                  <button class="Btn " @click="cartStore.addCart(product.id, product.price, product.quantity)">
+                  <button class="Btn " @click="cartStore.addCart(product.id, product.title, product.image, product.price, product.quantity)">
                     <div class="sign">
                       <i class="fas fa-cart-plus"></i>
                     </div>
