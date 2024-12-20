@@ -8,22 +8,30 @@ import { useProductStore } from "./productStore";
 
 export const useCartStore = defineStore("useCartStore", () => {
   const carts = ref([]);
+ 
+  const quantity = ref(1);
 
   const products = ref([]);
 
-  const loadProductsFromJSON = async () => {
-    try {
-      const response = await  fetch("http://localhost:3000/product");
-      if (!response.ok) throw new Error("Failed to fetch products");
-      const data = await response.json();
-      products.value =  data;
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } 
+  
+
+  const discountedPrice = (price, discount) => {
+    return (price - (price * discount) / 100).toFixed(2);
   };
 
-  const addCart = (id, price, quantity = 1) => {
-    const data = { id, price, quantity };
+  const loadProductsFromJSON = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/products");
+      if (!response.ok) throw new Error("Failed to fetch products");
+      const data = await response.json();
+      products.value = data;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  const addCart = (id,title, image, price, discount, quantity = 1) => {
+    const data = { id, title, image,  price, discount, quantity };
     const existingItem = carts.value.find((item) => item.id === data.id);
 
     if (existingItem) {
@@ -35,8 +43,8 @@ export const useCartStore = defineStore("useCartStore", () => {
     }
   };
 
-  const addCartDetail = (id, price, quantity) => {
-    const data = { id, price, quantity };
+  const addCartDetail = (id, title, image, price, discount, quantity) => {
+    const data = { id, title, image, price, discount, quantity };
     const existingItem = carts.value.find((item) => item.id === data.id);
 
     if (existingItem) {
@@ -64,19 +72,21 @@ export const useCartStore = defineStore("useCartStore", () => {
     }
   };
 
+  loadProductsFromJSON();
+
   const cartPreview = computed(() => {
     const productStore = useProductStore();
 
     return carts.value
       .map((prd) => {
-        const product = productStore.products.findIndex((e) => e.id === prd.id);
+        const product = productStore.products.find((e) => e.id === prd.id);
 
         if (!product) {
           console.log(`product ${prd.id} not found`);
           return null;
         }
         return {
-          product,
+          ...products,
           quantity: prd.quantity,
           totalProduct: product.price * prd.quantity,
         };
@@ -109,16 +119,15 @@ export const useCartStore = defineStore("useCartStore", () => {
   };
 
   const incrementQuantity = (i) => {
-    carts.value[i].quantity += 1;
-    saveToLocalStorage();
+    if (carts.value[i].quantity < 5) {
+      carts.value[i].quantity += 1;
+      saveToLocalStorage();
+    }
   };
 
   const decrementQuantity = (i) => {
-    carts.value[i].quantity -= 1;
-    saveToLocalStorage();
-
-    if (carts.value[i].quantity === 0) {
-      carts.value.splice(i, 1);
+    if (carts.value[i].quantity > 1) {
+      carts.value[i].quantity -= 1;
       saveToLocalStorage();
     }
   };
@@ -135,6 +144,7 @@ export const useCartStore = defineStore("useCartStore", () => {
 
   return {
     carts,
+    quantity,
     addCart,
     loadFromLocalStorage,
     loadProductsFromJSON,
@@ -144,6 +154,7 @@ export const useCartStore = defineStore("useCartStore", () => {
     removeCartItem,
     addCartDetail,
     clearCart,
+    discountedPrice,
     total,
   };
 });
