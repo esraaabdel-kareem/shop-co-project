@@ -12,26 +12,27 @@
         </nav>
         <h1 class="main-title mb-5">Your Cart</h1>
         <div class="row my-5">
-            <div class="col-lg-8 col-sm-12 border border-2 border-light-subtle rounded-5 p-3 "
+            <div class="col-lg-8 col-sm-12 border border-2 border-light-subtle rounded-5 p-2 "
                 v-if="carts && carts.length > 0">
                 <table class="table table-border  p-3" style="width: 100%">
                     <tbody>
-                        <tr v-for="( cart, index ) in cartStore.carts" :key="index" class="py-3 rounded-5 ">
+                        <tr v-for="( cart, index ) in carts" :key="index" class="py-3 rounded-5 ">
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <img :src="cart.image" class="rounded-4 "
-                                        style="width: 50px; height: 50px; object-fit: cover" :alt="cart.title" />
+                                    <img :src="cart.image" class="rounded-4 me-3"
+                                        style="width: 150px ; height: 150px; object-fit: cover" :alt="cart.title" />
+                                    <div class="ms-4">
+                                        <p class="fw-bold fs-5 mb-0">{{ cart.title }}</p>
+                                        <span class="fw-bold d-block text-muted fs-5">color: {{ cart.selectedColor
+                                            }}</span>
+                                        <span class="fw-bold d-block text-muted fs-5">size: {{ cart.selectedSize
+                                            }}</span>
+                                        <p class="fw-bold mb-0 fs-5">{{ currencyUSD(cart.price) }}</p>
+                                    </div>
                                 </div>
+
                             </td>
-                            <td>
-                                <div>
-                                    <p class="fw-bold mb-0">{{ cart.title }}</p>
-                                    <span class="fw-bold d-block text-muted">color: {{ cart.color }}</span>
-                                    <span class="fw-bold d-block text-muted">size: {{ cart.size }}</span>
-                                    <p class="fw-bold mb-0">{{ currencyUSD(cart.price) }}</p>
-                                </div>
-                            </td>
-                            <td class="d-flex justify-content-end flex-column align-items-end">
+                            <td class="d-flex  justify-content-end flex-column align-items-end p-5">
                                 <button class="button " @click="cartStore.removeCartItem(index)">
                                     <svg viewBox="0 0 448 512" class="svgIcon">
                                         <path
@@ -63,7 +64,7 @@
                         <p class="fw-bold mb-0">{{ currencyUSD(cartStore.total) }}</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <p class="fw-bold mb-0 text-black-50">Discount (-{{ cartStore.discount || 0 }} %)</p>
+                        <p class="fw-bold mb-0 text-black-50">Discount (-{{ cartStore.discount }} %)</p>
                         <p class="fw-bold mb-0 text-danger">-{{ currencyUSD(cartStore.total && cartStore.discount
                             ? (cartStore.total * cartStore.discount / 100)
                             : 0)
@@ -83,13 +84,12 @@
                                     : cartStore.total) + 15
                             ) }}</p>
                         </div>
-
                         <div class="d-flex py-3">
                             <div
                                 class=" rounded-5 border-0 bg-light w-100 px-auto d-flex justify-content-center align-items-center">
                                 <i class="fas fa-tag text-secondary px-2"></i>
-                                <input type="text" placeholder="Add Promo Code" class=" input border-0 bg-light text-muted"
-                                    v-model="promoCode">
+                                <input type="text" placeholder="Add Promo Code"
+                                    class=" input border-0 bg-light text-muted" v-model="promoCode">
                             </div>
                             <button class="btn btn-dark rounded-5 px-3 fw-bold fs-5" @input="applyPromoCode()">
                                 Apply
@@ -113,6 +113,7 @@
                 </div>
             </div>
         </div>
+
         <div v-if="!carts || carts.length === 0" class="text-center w-50 ">
             <h5 class="alert alert-secondary text-black-50 ">Your cart is empty <i
                     class="fas fa-shopping-cart fs-6"></i></h5>
@@ -123,10 +124,11 @@
 <script setup>
 import { useCartStore } from '@/store/cartStore';
 import { currencyUSD } from '@/shared/currency';
-import { onMounted, ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const cartStore = useCartStore();
 
+const carts = cartStore.carts;
 const promoCode = ref('');
 
 const applyPromoCode = () => {
@@ -138,16 +140,16 @@ const applyPromoCode = () => {
     promoCode.value = '';
 };
 
-const carts = cartStore.cartPreview ;
+
 
 onMounted(async () => {
     try {
         await cartStore.loadProductsFromJSON();
+        console.log(cartStore.carts);
     } catch (error) {
         console.log(error);
     }
 });
-
 
 </script>
 
