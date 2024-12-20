@@ -36,7 +36,7 @@
                                 ${{ product.price }}
                             </span>
                             <button class=" Btn "
-                                @click="cartStore.addCart(product.id, product.price, product.quantity)">
+                                @click="cartStore.addCart(product.id, product.title, product.image, product.price, product.quantity)">
                                 <div class="sign">
                                     <i class="fas fa-cart-plus"></i>
                                 </div>
