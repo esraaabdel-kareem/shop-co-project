@@ -8,12 +8,10 @@ import { useProductStore } from "./productStore";
 
 export const useCartStore = defineStore("useCartStore", () => {
   const carts = ref([]);
- 
+
   const quantity = ref(1);
 
   const products = ref([]);
-
-  
 
   const discountedPrice = (price, discount) => {
     return (price - (price * discount) / 100).toFixed(2);
@@ -21,7 +19,7 @@ export const useCartStore = defineStore("useCartStore", () => {
 
   const loadProductsFromJSON = async () => {
     try {
-      const response = await fetch("http://localhost:3000/products");
+      const response = await fetch("../DB/db.json");
       if (!response.ok) throw new Error("Failed to fetch products");
       const data = await response.json();
       products.value = data;
@@ -30,8 +28,8 @@ export const useCartStore = defineStore("useCartStore", () => {
     }
   };
 
-  const addCart = (id,title, image, price, discount, quantity = 1) => {
-    const data = { id, title, image,  price, discount, quantity };
+  const addCart = (id, title, image, price, discount, quantity = 1) => {
+    const data = { id, title, image, price, discount, quantity };
     const existingItem = carts.value.find((item) => item.id === data.id);
 
     if (existingItem) {
@@ -67,9 +65,7 @@ export const useCartStore = defineStore("useCartStore", () => {
 
   const loadFromLocalStorage = () => {
     const storedCart = localStorage.getItem("carts");
-    if (storedCart) {
-      carts.value = JSON.parse(storedCart);
-    }
+    carts.value = storedCart ? JSON.parse(storedCart) : [];
   };
 
   loadProductsFromJSON();
@@ -80,22 +76,28 @@ export const useCartStore = defineStore("useCartStore", () => {
     return carts.value
       .map((prd) => {
         const product = productStore.products.find((e) => e.id === prd.id);
-
         if (!product) {
-          console.log(`product ${prd.id} not found`);
+          console.log(`Product ${prd.id} not found`);
           return null;
         }
         return {
-          ...products,
+          ...product,
           quantity: prd.quantity,
-          totalProduct: product.price * prd.quantity,
+          totalProduct:
+            (product.price - (product.price * (prd.discount || 0)) / 100) *
+            prd.quantity,
         };
       })
       .filter((e) => e !== null);
   });
 
   const total = computed(() => {
-    return carts.value.reduce((sum, prd) => sum + prd.price * prd.quantity, 0);
+    return carts.value.reduce(
+      (sum, prd) =>
+        sum +
+        (prd.price - (prd.price * (prd.discount || 0)) / 100) * prd.quantity,
+      0
+    );
   });
 
   const alertAddCart = () => {
